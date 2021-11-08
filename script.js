@@ -2,18 +2,28 @@ var newData;
 recipesBtn = document.querySelector(".recipesBtn");
 specialsBtn = document.querySelector(".specialsBtn");
 postBtn = document.querySelector(".postBtn");
+submitBtn = document.getElementById("submit");
 inputs = document.querySelectorAll("input");
 textareas = document.querySelectorAll("textarea");
-submitBtn = document.getElementById("submit");
 recipeDiv = document.querySelector(".recipe-div");
 specialsDiv = document.querySelector(".specials-div");
 
-recipesBtn.addEventListener("click", getRecipes);
-specialsBtn.addEventListener("click", getSpecials);
-postBtn.addEventListener("click", newRecipe);
+recipesBtn.addEventListener("click", (e) => {getRecipes();showDiv(e)});
+specialsBtn.addEventListener("click", (e) => {getSpecials();showDiv(e);});
+postBtn.addEventListener("click", (e) => {showDiv(e);getValues();});
 inputs.forEach(input => input.addEventListener("keydown", getValues));
 textareas.forEach(input => input.addEventListener("keydown", getValues));
 submitBtn.addEventListener('click', newRecipe);
+
+function showDiv(e) {
+  $(".containers").addClass("animOffScreen");
+  setTimeout(() => {
+    $(".containers").addClass("d-none");
+    $(".containers").removeClass("animOffScreen");
+    e.target === recipesBtn ? $(".recipes-container").removeClass("d-none")
+      : e.target === specialsBtn ? $(".specials-container").removeClass("d-none animOffScreen")
+        : $(".new-recipes-container").removeClass("d-none animOffScreen") }, 500);
+}
 
 function getRecipes() {
   fetch("http://localhost:3001/recipes")
@@ -22,35 +32,26 @@ function getRecipes() {
     })
     .then(function (data) {
       recipeDiv.innerHTML = data.map(function (recipe) {
-        // return`<div class="recipe" data="${recipe.title}">
-        //   <img src="http://localhost:3001/${recipe.images.small}" >
-        //   <h2>${recipe.title}</h2>
-        //   <h2>Servings: ${recipe.servings}</h2>
-        //   <div>Ingredients:
-        //   ${recipe.ingredients.map(function (ingredient) {
-        //   return `<p>${ingredient.amount} ${ingredient.measurement} - ${ingredient.name}</p>`
-        // })}
-        //   </div>
-        // </div>`
-        return `< div class="card employee-card" >
-                  <div class="card-header myHeader recipe" data="${recipe.title}">
+        var image = recipe.images.small || "/img/pancake_mountain--s.jpg";
+        return `
+                  <div class="card-header recipeCardHeader recipe" data="${recipe.title}">
                       <h2 class="card-title">${recipe.title}</h2>
+                      <img class="card-title" src="http://localhost:3001/${image}" >
                       <h2 class="card-title">Servings: ${recipe.servings}</h2>
-                      <img class="card-title" src="http://localhost:3001/${recipe.images.small}" >
                   </div>
                   <div class="card-body">
-                      <ul class="list-group">Ingredients:
+                      <ul class="recipe-ul">Ingredients:
                           ${recipe.ingredients.map(function (ingredient) {
                             return `<li class="list-group-item">${ingredient.amount} ${ingredient.measurement} - ${ingredient.name}</li>`
                           })}
                       </ul>
-                      <ul class="list-group">Ingredients:
+                      <ulclass="recipe-ul">Directions:
                           ${recipe.directions.map(function (direction) {
                             return `<li class="list-group-item">${direction.instructions}</li>`
                           })}
                       </ul>
                   </div>
-                </div >`
+                `
       })
     })
     .catch((error) => {
@@ -64,13 +65,14 @@ function getSpecials() {
       return response.json();
     })
     .then(function (data) {
-      console.log(data)
       specialsDiv.innerHTML = data.map(function (special) {
-        return `<div class="special" data="${special.title}">
-          <h2>${special.title}</h2>
-          <h3>Type: ${special.type}</h2>
-          <p>Details: ${special.text}</p>
-        </div>`
+        return `<div class="special card-header recipeCardHeader" data="${special.title}">
+                  <h2 class="card-title">${special.title}</h2>
+                  <div class="card-body">
+                    <h3>Type: ${special.type}</h2>
+                    <p>Details: ${special.text}</p>
+                  </div>
+                </div>`
       })
     })
     .catch((error) => {
@@ -107,7 +109,6 @@ function getValues() {
   return newData;
 }
 
-
 function newRecipe(e) {
   e.preventDefault();
   getValues()
@@ -121,5 +122,10 @@ function newRecipe(e) {
 }
 
 function success() {
-  console.log("success");
+  $(".success").removeClass("d-none")
+  $(".success").addClass("animSuccess");
+  setTimeout(() => {
+    $(".success").addClass("d-none");
+    $(".success").removeClass("animSuccess")
+  }, 2000);
 }
