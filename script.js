@@ -32,7 +32,12 @@ function getRecipes() {
     })
     .then(function (data) {
       recipeDiv.innerHTML = data.map(function (recipe) {
-        var image = recipe.images.small || "/img/pancake_mountain--s.jpg";
+        console.log(recipe)
+        if (recipe.images) {
+          image = recipe.images.small
+        } else {
+          image = "/img/pancake_mountain--s.jpg";
+        }
         return `
                   <div class="card-header recipeCardHeader recipe" data="${recipe.title}">
                       <h2 class="card-title">${recipe.title}</h2>
@@ -87,8 +92,9 @@ function getValues() {
   var prepTime = $("#prep-time").val();
   var cookTime = $("#cook-time").val();
   var ingredients = $("#ingredients").val().split(", ");
+  var foo = [];
   for (var i = 0; i < ingredients.length; i++) {
-    ingredients[i] = {"ingredient": ingredients[i]}
+    foo[i] = {"name": ingredients[i]}
   }
   var directions = $("#directions").val();
   newData = {
@@ -99,7 +105,7 @@ function getValues() {
     cookTime: cookTime,
     postDate: Date,
     editDate: Date,
-    ingredients,
+    ingredients: foo,
     directions: [
       {
         instructions: directions
@@ -110,12 +116,40 @@ function getValues() {
 }
 
 function newRecipe(e) {
+  var boo = {
+    "title": "Queso Brat Daddy",
+    "description": "s breakfast, fit for a crowd.",
+    "images": {
+      "full": "/img/queso_brat_scramble.jpg",
+      "medium": "/img/queso_brat_scramble--m.jpg",
+      "small": "/img/queso_brat_scramble--s.jpg"
+    },
+    "servings": 5,
+    "prepTime": 10,
+    "cookTime": 20,
+    "postDate": "01/20/2018 05:15:03 PM",
+    "editDate": "02/05/2018 11:56:29 PM",
+    "ingredients": [
+      {
+        "uuid": "86c9eb8e-3ff6-4d4f-83d7-ea4d9f1ae455",
+        "amount": 1,
+        "measurement": "cup",
+        "name": "pepper jack cheese, shredded"
+      }
+    ],
+    "directions": [
+      {
+        "instructions": "Serve immediately.",
+        "optional": false
+      }
+    ]
+  }
   e.preventDefault();
   getValues()
   $.ajax({
     type: "POST",
     url: "http://localhost:3001/recipes",
-    data: newData,
+    data: boo,
     success: success,
     dataType: "json"
   });
