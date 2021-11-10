@@ -16,7 +16,7 @@ textareas.forEach(input => input.addEventListener("keydown", getValues));
 submitBtn.addEventListener('click', newRecipe);
 
 $(document).ready(function () {
-  console.log("Thank you for giving me an opportunity to be in front of you. Your consideration means a lot and I'm exicted to hear learn from you. \nBest, \nThomas Bragg");
+  console.log("Thank you for giving me an opportunity to be in front of you. Your consideration means a lot and I'm exicted to learn from you. \nBest, \nThomas Bragg");
 });
 
 function showDiv(e) {
